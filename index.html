@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>猫咪训练游戏（2物品版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -20,8 +20,8 @@
             top: 220px;
             left: 50%;
             transform: translate(-50%, 0);
-            width: 60px;
-            height: 60px;
+            width: 60px !important;
+            height: 60px !important;
             transition: all 0.6s ease;
             z-index: 20;
         }
@@ -97,12 +97,37 @@
             margin-bottom: 6px; /* 缩小标题下边距 */
             display: block;
         }
+
+        /* 强制锁定所有核心元素尺寸，防止GitHub Pages缩放 */
+        .game-container {
+            width: 900px !important;
+            height: 600px !important;
+            min-width: 900px !important;
+            min-height: 600px !important;
+            max-width: 900px !important;
+            max-height: 600px !important;
+        }
+        .cat-container {
+            width: 200px !important;
+            height: 200px !important;
+        }
+        .item-container {
+            width: 150px !important;
+            height: 150px !important;
+        }
+        .cat-img, .paw-img, .item-img {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: cover !important;
+        }
     </style>
 <base target="_blank">
 </head>
 <body class="bg-gray-100 flex flex-col items-center py-10">
     <!-- 游戏容器：固定尺寸，所有元素位置永久不变 -->
-    <div class="w-[900px] h-[600px] bg-white rounded-2xl shadow-lg relative overflow-hidden">
+    <div class="game-container bg-white rounded-2xl shadow-lg relative overflow-hidden">
         <!-- 背景：模拟地板 -->
         <div class="absolute inset-0 bg-gradient-to-b from-yellow-50 to-yellow-100"></div>
         
@@ -144,34 +169,48 @@
             <div class="upload-section">
                 <div class="upload-label">真棒音效</div>
                 <label for="upload-success-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-success-sound" class="file-input" accept="audio/mp3">
+                <input type="file" id="upload-success-sound" class="file-input" accept=".mp3,audio/mpeg">
             </div>
             
             <div class="upload-section">
                 <div class="upload-label">错误音效</div>
                 <label for="upload-error-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-error-sound" class="file-input" accept="audio/mp3">
+                <input type="file" id="upload-error-sound" class="file-input" accept=".mp3,audio/mpeg">
+            </div>
+
+            <!-- 新增：纸巾音效上传 -->
+            <div class="upload-section">
+                <div class="upload-label">纸巾音效</div>
+                <label for="upload-tissue-sound" class="upload-btn">选择MP3</label>
+                <input type="file" id="upload-tissue-sound" class="file-input" accept=".mp3,audio/mpeg">
+            </div>
+
+            <!-- 新增：萝卜音效上传 -->
+            <div class="upload-section">
+                <div class="upload-label">萝卜音效</div>
+                <label for="upload-radish-sound" class="upload-btn">选择MP3</label>
+                <input type="file" id="upload-radish-sound" class="file-input" accept=".mp3,audio/mpeg">
             </div>
         </div>
         
         <!-- 固定位置：猫咪（正中间上方） -->
-        <div class="absolute top-[80px] left-1/2 transform -translate-x-1/2 w-[200px] h-[200px] z-10">
-            <img id="cat-img" src="./tupian/cat.png" alt="猫咪" class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
+        <div class="absolute top-[80px] left-1/2 transform -translate-x-1/2 cat-container z-10">
+            <img id="cat-img" src="./tupian/cat.png" alt="猫咪" class="cat-img rounded-full border-4 border-white shadow-md">
             <!-- 猫咪爪子（核心动效元素：摸物动作） -->
             <div id="cat-paw" class="cat-paw paw-rest">
-                <img id="paw-img" src="./tupian/zhua.png" alt="猫爪" class="w-full h-full object-contain">
+                <img id="paw-img" src="./tupian/zhua.png" alt="猫爪" class="paw-img object-contain">
             </div>
         </div>
 
         <!-- 固定位置：2个物品（底部左右对称排列） -->
         <!-- 物品1 -->
-        <div class="absolute bottom-[80px] left-[150px] w-[150px] h-[150px] z-5 text-center" id="item1">
-            <img id="item1-img" src="./tupian/zhi.png" alt="物品1" class="w-full h-full object-cover rounded-lg border-3 border-white shadow-md">
+        <div class="absolute bottom-[80px] left-[150px] item-container z-5 text-center" id="item1">
+            <img id="item1-img" src="./tupian/zhi.png" alt="物品1" class="item-img rounded-lg border-3 border-white shadow-md">
             <div id="item1-text" class="mt-3 font-bold text-xl text-gray-800">纸巾</div>
         </div>
         <!-- 物品2 -->
-        <div class="absolute bottom-[80px] right-[150px] w-[150px] h-[150px] z-5 text-center" id="item2">
-            <img id="item2-img" src="./tupian/luobo.png" alt="物品2" class="w-full h-full object-cover rounded-lg border-3 border-white shadow-md">
+        <div class="absolute bottom-[80px] right-[150px] item-container z-5 text-center" id="item2">
+            <img id="item2-img" src="./tupian/luobo.png" alt="物品2" class="item-img rounded-lg border-3 border-white shadow-md">
             <div id="item2-text" class="mt-3 font-bold text-xl text-gray-800">红萝卜</div>
         </div>
 
@@ -195,6 +234,14 @@
         <audio id="error-audio" preload="auto">
             <source src="./shengyin/cuo.MP3" type="audio/mpeg">
         </audio>
+        <!-- 新增：纸巾音效 -->
+        <audio id="tissue-audio" preload="auto">
+            <source src="./shengyin/zhijin.MP3" type="audio/mpeg">
+        </audio>
+        <!-- 新增：萝卜音效 -->
+        <audio id="radish-audio" preload="auto">
+            <source src="./shengyin/luobo.MP3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script>
@@ -214,6 +261,8 @@
             popup: document.getElementById('popup'),
             successAudio: document.getElementById('success-audio'),
             errorAudio: document.getElementById('error-audio'),
+            tissueAudio: document.getElementById('tissue-audio'), // 新增纸巾音效
+            radishAudio: document.getElementById('radish-audio'), // 萝卜音效
             items: ITEM_CONFIG.map(item => ({
                 ...item,
                 element: document.getElementById(item.id),
@@ -275,40 +324,36 @@
             });
         });
 
-        // 4. 音效上传功能
-        const successSoundUpload = document.getElementById('upload-success-sound');
-        successSoundUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type === 'audio/mp3') {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    state.successAudio.src = event.target.result;
-                    // 预加载新音频
-                    state.successAudio.preload = 'auto';
-                    state.successAudio.load();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('请上传MP3格式的音频文件');
-            }
-        });
+        // 通用音效上传处理函数（修复格式判断问题）
+        function handleSoundUpload(inputId, audioElement) {
+            const soundUpload = document.getElementById(inputId);
+            soundUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // 修复：兼容不同浏览器的MIME类型和后缀判断
+                const isMp3 = file.type === 'audio/mpeg' || file.type === 'audio/mp3' || file.name.endsWith('.mp3');
+                if (isMp3) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        audioElement.src = event.target.result;
+                        audioElement.preload = 'auto';
+                        audioElement.load();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('请上传MP3格式的音频文件！');
+                    // 清空输入框，避免重复提示
+                    soundUpload.value = '';
+                }
+            });
+        }
 
-        const errorSoundUpload = document.getElementById('upload-error-sound');
-        errorSoundUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type === 'audio/mp3') {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    state.errorAudio.src = event.target.result;
-                    // 预加载新音频
-                    state.errorAudio.preload = 'auto';
-                    state.errorAudio.load();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('请上传MP3格式的音频文件');
-            }
-        });
+        // 4. 音效上传功能（使用修复后的通用函数）
+        handleSoundUpload('upload-success-sound', state.successAudio);
+        handleSoundUpload('upload-error-sound', state.errorAudio);
+        handleSoundUpload('upload-tissue-sound', state.tissueAudio); // 纸巾音效
+        handleSoundUpload('upload-radish-sound', state.radishAudio); // 萝卜音效
 
         // ========== 游戏核心逻辑 ==========
         // 绑定按钮事件
@@ -325,6 +370,23 @@
             if (state.isInteracting) return;
             state.isInteracting = true;
             state.currentCommand = targetName;
+
+            // 精准播放对应物品的女声
+            if (targetName === '纸巾') {
+                // 播放纸巾女声
+                state.tissueAudio.currentTime = 0;
+                state.tissueAudio.play().catch(err => {
+                    console.log('纸巾音效播放失败:', err);
+                    alert('请先点击页面任意位置激活音频播放');
+                });
+            } else if (targetName === '红萝卜') {
+                // 播放萝卜女声
+                state.radishAudio.currentTime = 0;
+                state.radishAudio.play().catch(err => {
+                    console.log('萝卜音效播放失败:', err);
+                    alert('请先点击页面任意位置激活音频播放');
+                });
+            }
 
             // 步骤1：重置所有状态（爪子回位，物品取消按压）
             resetAllStates();
@@ -430,6 +492,15 @@
                 state.isInteracting = false; // 恢复可点击
             }, 2000);
         }
+
+        // 兼容浏览器自动播放策略：点击页面激活音频
+        document.addEventListener('click', () => {
+            // 预加载所有音频
+            state.successAudio.load();
+            state.errorAudio.load();
+            state.tissueAudio.load(); // 预加载纸巾音效
+            state.radishAudio.load(); // 预加载萝卜音效
+        }, { once: true });
     </script>
 </body>
 </html>
