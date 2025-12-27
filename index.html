@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head><base href="https://raw.githubusercontent.com/louhangtian001/louhangtian001.github.io/cat_game/index.html">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI猫咪特训（URL+文件双模版）</title>
@@ -80,16 +79,16 @@
 </head>
 <body class="panel-closed"> <!-- 默认收起面板，方便直接玩，可点击展开 -->
 
-    <div id="scale-wrapper">
+    <div id="scale-wrapper" style="transform: scale(1);">
         <div class="game-container">
             <div class="game-bg"></div>
 
             <!-- 隐藏的音频容器 -->
             <div id="audio-store" style="display:none;">
-                <audio id="audio-left"></audio>
-                <audio id="audio-right"></audio>
-                <audio id="audio-success"></audio>
-                <audio id="audio-fail"></audio>
+                <audio id="audio-left" src="data:audio/mpeg;base64,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GWJVpGmJPMKIDKizNWw8Y4Exjubw8JpIeaw+2dO++uAoVYfCznfsROpkgiCGRnl7LaTsOVSBEI4oQmxUdHYHwrhdYzkh0of3foSG6YfCCHkM2N9yweWoUSProlXoDbLGadn/s7FpUXSLgSz2NVFV6wsHhUo02ZMkB4q8soAABykEAAQ2060RI8smrG3jovs2qtgABRRZpLHRm36xwqJwNHqcNe3GE0VCiRw5EHcxSpljXk1ZFLam7+dqn/+SOWOVwvybmUsAF+61v73nDX/+Ut6Hc9llq+ORIDJpKzz+NQdJ27Hq0cJFPa3Vv+jvUABMoQUAAGFWMyqWQNTSGnbhNPGZ1NYWvA8YhOWJcDlcCsH1It6jW/EuVqe4bfP3aDp4eczZQ+x5MooRsFBPqtzb+//+p1+KOge+EQ+FnRxAWKOcfPRwtnQM1C5IWtt3RxyORyuRtpJEk974aZGpLFUGBAbADGISYQa0iVAZpSpkQi+knAYDaeYomiYMgbUz/GJCGQmdwoAglKNChuKXCAVCcsPD8LbmnP/7kmTsAANGJkxDTDDSVqOpnD2DLA4MmTF1lAAJbA8merCwAK3aDXBVvfdqzQmELodmTs2ZMsyLsujKwzdXAlDnPu8VDKqzwMEVA6byv+8zqrldBrciYi4MMUVFDr4yiTzsOQLEW0p4CfaA3Uh1rUftU8q3d3Zr4yy7PzF3svzv3bF+mq3Ll+zh3ndcy+tnreeN67u53DWNLWz3YtSq7Uwl3sBAVcQGNACMVFUCUFDZ0GzAVb////9VzKgGIBLJGPFAAABkinCHJNaCS/qVoUAkQ8ydMFCS06UgkSljR8egpxIx8trgoWA0ztY245vZ4WxHn0gRXn0rFBo+YXxjIehR2rg8mhSYfby9bTjVqicIq5X2M6DfgYxmaDqLNEjUYXeVYxMj5spm1dez6BfP//9fT+v///xv/5zq8POs3xB+sRZYdM7zA+8+v+6/FXy6p4L+SJCm21TRpYdHKXV4tWfbZiJjdvb2g4tnLDNUNf/ygPABO4QoJEJkhTWW0ekhLkX0ekuMzEro0EOgbA2OVYDoBY0YLHXKkrJIqsNJIq2q+zP/+5Jk5YAHHlBP7msABLWsuTnMPAAMXJEUvPQAAMQFX8eMMABs1yuwsvtfJIqBQVLQWPVA0MDvBXBV7uRwad5LBV+WPCLVyobEuvljyfyob/qPf53kQEc0jOUSBgrDiSWzM5Qok6HSoNHpYOJ08FToKuyz5YOawV/////U/+VO8jPfiXljxapMQU1FMy4xMDEgKGJldGEgMimqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"></audio>
+                <audio id="audio-right" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/luobo.MP3?raw=true"></audio>
+                <audio id="audio-success" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/good.MP3?raw=true"></audio>
+                <audio id="audio-fail" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/cuo.MP3?raw=true"></audio>
             </div>
 
             <!-- 设置面板 -->
@@ -105,21 +104,21 @@
                         <div class="group-title">左侧物品 (Item 1)</div>
                         <div class="control-row">
                             <span class="input-label">名称</span>
-                            <input type="text" id="input-left-name" class="text-input" value="小鱼干" oninput="updateText('left', this.value)">
+                            <input type="text" id="input-left-name" class="text-input" value="纸巾" oninput="updateText('left', this.value)">
                         </div>
                         <div class="control-row">
                             <span class="input-label">图片 (选其一)</span>
                             <label class="file-btn" for="file-img-left" id="btn-img-left">📂 选择图片文件...</label>
                             <input type="file" id="file-img-left" accept="image/*" onchange="handleFile(this, 'img', 'img-left')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-left')">
+                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-left')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/zhi.png?raw=true">
                         </div>
                         <div class="control-row">
                             <span class="input-label">语音 (可选)</span>
-                            <label class="file-btn" for="file-audio-left" id="btn-audio-left">🎵 选择音频文件...</label>
+                            <label class="file-btn has-file" for="file-audio-left" id="btn-audio-left">✅ 已加载本地文件 (可替换)</label>
                             <input type="file" id="file-audio-left" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-left')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-left')">
+                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-left')" value="">
                         </div>
                     </div>
 
@@ -128,21 +127,21 @@
                         <div class="group-title">右侧物品 (Item 2)</div>
                         <div class="control-row">
                             <span class="input-label">名称</span>
-                            <input type="text" id="input-right-name" class="text-input" value="老鼠" oninput="updateText('right', this.value)">
+                            <input type="text" id="input-right-name" class="text-input" value="萝卜" oninput="updateText('right', this.value)">
                         </div>
                         <div class="control-row">
                             <span class="input-label">图片 (选其一)</span>
                             <label class="file-btn" for="file-img-right" id="btn-img-right">📂 选择图片文件...</label>
                             <input type="file" id="file-img-right" accept="image/*" onchange="handleFile(this, 'img', 'img-right')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-right')">
+                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-right')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/luobo.png?raw=true">
                         </div>
                         <div class="control-row">
                             <span class="input-label">语音 (可选)</span>
                             <label class="file-btn" for="file-audio-right" id="btn-audio-right">🎵 选择音频文件...</label>
                             <input type="file" id="file-audio-right" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-right')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-right')">
+                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-right')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/luobo.MP3?raw=true">
                         </div>
                     </div>
 
@@ -154,14 +153,14 @@
                             <label class="file-btn" for="file-cat" id="btn-img-cat">📂 选择文件...</label>
                             <input type="file" id="file-cat" accept="image/*" onchange="handleFile(this, 'img', 'img-cat')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-cat')">
+                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-cat')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/cat.png?raw=true">
                         </div>
                         <div class="control-row">
                             <span class="input-label">猫爪图片</span>
                             <label class="file-btn" for="file-paw" id="btn-img-paw">📂 选择文件...</label>
                             <input type="file" id="file-paw" accept="image/*" onchange="handleFile(this, 'img', 'img-paw')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-paw')">
+                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-paw')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/zhua.png?raw=true">
                         </div>
                     </div>
 
@@ -173,14 +172,14 @@
                             <label class="file-btn" for="file-audio-success" id="btn-audio-success">🎵 选择文件...</label>
                             <input type="file" id="file-audio-success" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-success')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-success')">
+                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-success')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/good.MP3?raw=true">
                         </div>
                         <div class="control-row">
                             <span class="input-label">错误音效</span>
                             <label class="file-btn" for="file-audio-fail" id="btn-audio-fail">🎵 选择文件...</label>
                             <input type="file" id="file-audio-fail" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-fail')">
                             <div class="divider-text">OR</div>
-                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-fail')">
+                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-fail')" value="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/shengyin/cuo.MP3?raw=true">
                         </div>
                     </div>
 
@@ -195,28 +194,28 @@
 
             <!-- 游戏区域 -->
             <div class="cat-container">
-                <img id="img-cat" src="https://api.iconify.design/noto:cat-face.svg" style="width:100%; height:100%; object-fit: contain;">
+                <img id="img-cat" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/cat.png?raw=true" style="width:100%; height:100%; object-fit: contain;">
             </div>
 
-            <div id="paw" class="cat-paw">
-                <img id="img-paw" src="https://api.iconify.design/emojione:paw-prints.svg" style="width:100%; height:100%; object-fit: contain; filter: drop-shadow(0 4px 2px rgba(0,0,0,0.2));">
+            <div id="paw" class="cat-paw paw-rest">
+                <img id="img-paw" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/zhua.png?raw=true" style="width:100%; height:100%; object-fit: contain; filter: drop-shadow(0 4px 2px rgba(0,0,0,0.2));">
             </div>
 
             <div class="items-area">
                 <div class="item-card" onclick="trainCat('left')">
                     <div class="status-bubble" id="bubble-left">选这里!</div>
                     <div class="item-circle">
-                        <img id="img-left" src="https://api.iconify.design/noto:fish.svg" class="item-img">
+                        <img id="img-left" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/zhi.png?raw=true" class="item-img">
                     </div>
-                    <div id="txt-left" class="item-name-tag">小鱼干</div>
+                    <div id="txt-left" class="item-name-tag">纸巾</div>
                 </div>
 
                 <div class="item-card" onclick="trainCat('right')">
                     <div class="status-bubble" id="bubble-right">选这里!</div>
                     <div class="item-circle">
-                        <img id="img-right" src="https://api.iconify.design/noto:mouse-face.svg" class="item-img">
+                        <img id="img-right" src="https://github.com/louhangtian001/louhangtian001.github.io/blob/cat_game/tupian/luobo.png?raw=true" class="item-img">
                     </div>
-                    <div id="txt-right" class="item-name-tag">老鼠</div>
+                    <div id="txt-right" class="item-name-tag">萝卜</div>
                 </div>
             </div>
         </div>
@@ -420,5 +419,203 @@
         window.addEventListener('resize', resizeGame);
         resizeGame();
     </script>
-</body>
-</html>
+
+
+<script>
+        // --- 1. 处理文件上传 (转Base64) ---
+        function handleFile(input, type, targetId) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                applySource(base64, type, targetId);
+                updateFileBtnStatus(input.id, true); // 按钮变绿
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- 2. 处理URL输入 ---
+        function handleUrl(url, type, targetId) {
+            if (!url || url.trim() === "") return;
+            applySource(url, type, targetId);
+            // URL输入后，不需要变绿文件按钮，因为它不是文件上传，
+            // 但可以重置文件按钮状态，表示现在用的是URL
+            // 找到对应的文件input
+            // 这里我们简化处理，只要生效即可
+        }
+
+        // 通用：应用资源到DOM
+        function applySource(src, type, targetId) {
+            if (type === 'img') {
+                const img = document.getElementById(targetId);
+                img.src = src;
+            } else if (type === 'audio') {
+                const audio = document.getElementById(targetId);
+                audio.src = src;
+            }
+        }
+
+        // 更新按钮状态（UI修复：不遮挡文字，只是加个✅）
+        function updateFileBtnStatus(inputId, success) {
+            const label = document.querySelector(`label[for="${inputId}"]`);
+            if (success) {
+                label.classList.add('has-file');
+                // 优雅地更改文字，保留原意
+                if (!label.innerText.includes("✅")) {
+                    label.innerText = "✅ 已加载本地文件 (可替换)";
+                }
+            }
+        }
+
+        function updateText(side, val) {
+            document.getElementById('txt-' + side).innerText = val || (side==='left'?'物品1':'物品2');
+        }
+
+        // --- 3. 导出功能 (升级版：保存输入框的值) ---
+        function exportGame() {
+            // 在导出前，必须把所有 input 的当前值写死到 value 属性里
+            // 否则 outerHTML 不会包含用户刚刚在输入框里打的字
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.setAttribute('value', input.value);
+            });
+
+            // 同样的，确保图片的 src 和 audio 的 src 已经是新的了 (DOM已经实时更新了，所以不需要额外操作)
+
+            const docClone = document.documentElement.cloneNode(true);
+            
+            // 强制面板收起，这样别人打开时界面整洁
+            const panel = docClone.querySelector('#settingsPanel');
+            panel.classList.add('collapsed');
+            docClone.querySelector('body').classList.add('panel-closed');
+
+            const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
+            const blob = new Blob([htmlContent], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "猫咪游戏_自定义版.html";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- 4. 游戏逻辑 ---
+        function playSound(id, fallbackText) {
+            const audioEl = document.getElementById('audio-' + id);
+            // 检查是否有src且不为空
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 5) {
+                audioEl.currentTime = 0;
+                // 尝试播放，处理可能的跨域或格式错误
+                audioEl.play().catch(e => {
+                    console.warn("Audio play failed, using TTS:", e);
+                    playTTS(fallbackText);
+                });
+            } else {
+                playTTS(fallbackText);
+            }
+        }
+
+        function playTTS(text) {
+            if (window.speechSynthesis) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'zh-CN';
+                u.rate = 1.2;
+                speechSynthesis.speak(u);
+            }
+        }
+
+        function playBeep() {
+            // 优先检查是否有上传的fail音效
+            const audioEl = document.getElementById('audio-fail');
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 5) {
+                audioEl.currentTime = 0;
+                audioEl.play().catch(() => beepFallback());
+                return;
+            }
+            beepFallback();
+        }
+
+        function beepFallback() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        }
+
+        let isBusy = false;
+        async function trainCat(targetSide) {
+            if (isBusy) return;
+            isBusy = true;
+
+            const oppositeSide = targetSide === 'left' ? 'right' : 'left';
+            const itemName = document.getElementById('txt-' + targetSide).innerText;
+
+            playSound(targetSide, itemName);
+            showBubble(targetSide);
+            await wait(300);
+
+            // 50%概率瞎蒙
+            const catChoice = Math.random() < 0.5 ? targetSide : oppositeSide;
+
+            if (catChoice === targetSide) {
+                await movePawTo(targetSide);
+                playSound('success', '真棒！');
+                await wait(1000);
+                resetPaw();
+            } else {
+                await movePawTo(oppositeSide);
+                playBeep(); 
+                await wait(1000);
+                resetPaw();
+                await wait(200);
+                await movePawTo(targetSide); // 纠正
+                playSound('success', '真棒！');
+                await wait(1000);
+                resetPaw();
+            }
+            isBusy = false;
+        }
+
+        function movePawTo(side) {
+            return new Promise(resolve => {
+                const paw = document.getElementById('paw');
+                paw.className = `cat-paw paw-${side}`;
+                setTimeout(resolve, 600);
+            });
+        }
+        function resetPaw() { document.getElementById('paw').className = `cat-paw paw-rest`; }
+        function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+        function showBubble(side) {
+            const b = document.getElementById('bubble-' + side);
+            b.classList.add('show-bubble');
+            setTimeout(() => b.classList.remove('show-bubble'), 1000);
+        }
+
+        function togglePanel() {
+            const panel = document.getElementById('settingsPanel');
+            const body = document.body;
+            panel.classList.toggle('collapsed');
+            if (panel.classList.contains('collapsed')) {
+                body.classList.add('panel-closed');
+            } else {
+                body.classList.remove('panel-closed');
+            }
+        }
+
+        function resizeGame() {
+            const gameWidth = 900;
+            const gameHeight = 600;
+            const scale = Math.min((window.innerWidth - 20) / gameWidth, (window.innerHeight - 20) / gameHeight, 1);
+            document.getElementById('scale-wrapper').style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('resize', resizeGame);
+        resizeGame();
+    </script></body></html>
