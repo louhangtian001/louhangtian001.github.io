@@ -3,234 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI猫咪特训（完全自定义版）</title>
+    <title>AI猫咪特训（可保存版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- 基础布局 --- */
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #f3f4f6;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #f3f4f6; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: "Microsoft YaHei", sans-serif; }
+        #scale-wrapper { transform-origin: center center; transition: transform 0.2s ease; }
+        .game-container { width: 900px !important; height: 600px !important; position: relative; background-color: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; flex-shrink: 0; }
+        .game-bg { position: absolute; inset: 0; background: linear-gradient(to bottom, #fff7ed, #fed7aa); z-index: 0; }
 
-        #scale-wrapper {
-            transform-origin: center center;
-            transition: transform 0.2s ease;
-        }
-
-        .game-container {
-            width: 900px !important;
-            height: 600px !important;
-            position: relative;
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .game-bg {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, #fff7ed, #fed7aa);
-            z-index: 0;
-        }
-
-        /* --- 设置面板 (升级版：滚动+折叠) --- */
-        .settings-panel {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            bottom: 10px;
-            width: 240px;
-            background: rgba(255, 255, 255, 0.96);
-            border-radius: 12px;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #e5e7eb;
-        }
-
-        .panel-header {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: bold;
-            text-align: center;
-            background: #f9fafb;
-            border-radius: 12px 12px 0 0;
-            color: #374151;
-        }
-
-        .panel-content {
-            flex: 1;
-            overflow-y: auto; /* 允许内部滚动 */
-            padding: 10px;
-        }
+        /* --- 设置面板 --- */
+        .settings-panel { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 250px; background: rgba(255, 255, 255, 0.98); border-radius: 12px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); z-index: 100; display: flex; flex-direction: column; border: 1px solid #e5e7eb; transition: transform 0.3s ease; }
+        .settings-panel.collapsed { transform: translateX(-260px); }
         
-        /* 隐藏滚动条美化 */
+        .panel-header { padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: bold; display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border-radius: 12px 12px 0 0; color: #374151; }
+        .toggle-btn { cursor: pointer; font-size: 18px; padding: 0 5px; }
+        
+        /* 展开按钮（当面板隐藏时显示） */
+        .open-panel-btn { position: absolute; top: 10px; left: 10px; z-index: 90; background: white; padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; font-weight: bold; display: none; }
+        .settings-panel.collapsed + .open-panel-btn { display: block; }
+
+        .panel-content { flex: 1; overflow-y: auto; padding: 10px; }
         .panel-content::-webkit-scrollbar { width: 4px; }
         .panel-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-        .group-box {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 12px;
-        }
+        .group-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 12px; }
+        .group-title { font-size: 12px; font-weight: bold; color: #4b5563; margin-bottom: 6px; border-left: 3px solid #f59e0b; padding-left: 6px; }
+        .control-row { margin-bottom: 6px; }
+        .input-label { font-size: 10px; color: #64748b; display: block; margin-bottom: 2px; }
+        .text-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px; font-size: 11px; }
         
-        .group-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #4b5563;
-            margin-bottom: 6px;
-            border-left: 3px solid #f59e0b;
-            padding-left: 6px;
-        }
-
-        .control-row {
-            margin-bottom: 6px;
-        }
-        
-        .input-label {
-            font-size: 10px;
-            color: #64748b;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .text-input {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 4px;
-            font-size: 11px;
-        }
-
-        .file-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            background: #e2e8f0;
-            color: #475569;
-            padding: 4px 0;
-            border-radius: 4px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px dashed #94a3b8;
-        }
+        .file-btn { display: block; width: 100%; text-align: center; background: #e2e8f0; color: #475569; padding: 5px 0; border-radius: 4px; font-size: 10px; cursor: pointer; transition: 0.2s; border: 1px dashed #94a3b8; }
         .file-btn:hover { background: #cbd5e1; }
-        .file-btn.has-file { background: #dcfce7; border-color: #22c55e; color: #15803d; }
-
+        .file-btn.has-file { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: bold; }
         input[type="file"] { display: none; }
 
+        /* 保存按钮 */
+        .save-btn { background: #3b82f6; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; margin-top: 10px; transition: background 0.2s; }
+        .save-btn:hover { background: #2563eb; }
+
         /* --- 游戏核心元素 --- */
-        .cat-container {
-            position: absolute;
-            top: 40px;
-            left: 50%; /* 修正为50% */
-            transform: translateX(-50%); /* 修正居中 */
-            width: 240px;
-            height: 240px;
-            z-index: 10;
-            margin-left: 80px; /* 让猫稍微偏右一点，因为左侧有设置面板 */
-        }
+        .cat-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 240px; height: 240px; z-index: 10; margin-left: 0; transition: margin 0.3s; }
+        .cat-paw { position: absolute; top: 200px; left: 50%; width: 70px; height: 70px; z-index: 20; transform: translate(-50%, 0); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; margin-left: 0; }
+        
+        /* 偏移修正（当面板打开时，游戏元素右移以免遮挡） */
+        body:not(.panel-closed) .cat-container, 
+        body:not(.panel-closed) .cat-paw, 
+        body:not(.panel-closed) .items-area { margin-left: 100px; }
 
-        .cat-paw {
-            position: absolute;
-            top: 200px;
-            left: 50%;
-            width: 70px;
-            height: 70px;
-            z-index: 20;
-            transform: translate(-50%, 0);
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动画 */
-            margin-left: 80px; /* 跟随猫的偏移 */
-            pointer-events: none;
-        }
-
-        /* 爪子位置定义 */
         .paw-rest { transform: translate(-50%, 0) rotate(0deg); }
         .paw-left { transform: translate(calc(-50% - 160px), 140px) rotate(-25deg); }
         .paw-right { transform: translate(calc(-50% + 160px), 140px) rotate(25deg); }
 
-        .items-area {
-            position: absolute;
-            bottom: 60px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 150px;
-            z-index: 15;
-            padding-left: 160px; /* 抵消面板宽度，保持视觉居中 */
-        }
-
-        .item-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.1s;
-            position: relative;
-        }
+        .items-area { position: absolute; bottom: 60px; left: 0; width: 100%; display: flex; justify-content: center; gap: 150px; z-index: 15; transition: margin 0.3s; }
+        .item-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; position: relative; }
         .item-card:active { transform: scale(0.95); }
-
-        .item-circle {
-            width: 130px;
-            height: 130px;
-            background: rgba(255,255,255,0.6);
-            border: 4px solid #fff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .item-img {
-            width: 85%;
-            height: 85%;
-            object-fit: contain;
-        }
-
-        .item-name-tag {
-            margin-top: 10px;
-            background: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-size: 14px;
-        }
-
-        /* 状态提示泡 */
-        .status-bubble {
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            white-space: nowrap;
-        }
+        .item-circle { width: 130px; height: 130px; background: rgba(255,255,255,0.6); border: 4px solid #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 6px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        .item-img { width: 85%; height: 85%; object-fit: contain; }
+        .item-name-tag { margin-top: 10px; background: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px; }
+        .status-bubble { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 4px 10px; border-radius: 8px; font-size: 12px; opacity: 0; transition: opacity 0.3s; white-space: nowrap; pointer-events: none; }
         .show-bubble { opacity: 1; top: -50px; }
-
     </style>
 </head>
 <body>
@@ -239,79 +71,90 @@
         <div class="game-container">
             <div class="game-bg"></div>
 
-            <!-- 左侧超大设置面板 -->
-            <div class="settings-panel">
-                <div class="panel-header">🎮 训练师控制台</div>
+            <!-- 隐藏的音频容器 (用于持久化保存) -->
+            <div id="audio-store" style="display:none;">
+                <audio id="audio-left"></audio>
+                <audio id="audio-right"></audio>
+                <audio id="audio-success"></audio>
+                <audio id="audio-fail"></audio>
+            </div>
+
+            <!-- 侧边面板 -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="panel-header">
+                    <span>🎮 训练师控制台</span>
+                    <span class="toggle-btn" onclick="togglePanel()">×</span>
+                </div>
                 <div class="panel-content">
                     
-                    <!-- 1. 左物品设置 -->
                     <div class="group-box">
                         <div class="group-title">左侧物品 (Item 1)</div>
                         <div class="control-row">
                             <span class="input-label">名称</span>
-                            <input type="text" class="text-input" value="小鱼干" oninput="updateText('left', this.value)">
+                            <input type="text" id="input-left-name" class="text-input" value="小鱼干" oninput="updateText('left', this.value)">
                         </div>
                         <div class="control-row">
                             <span class="input-label">图片</span>
-                            <label class="file-btn" for="file-img-left">上传图片</label>
-                            <input type="file" id="file-img-left" accept="image/*" onchange="loadImg(event, 'img-left')">
+                            <label class="file-btn" for="file-img-left">📷 上传左图</label>
+                            <input type="file" id="file-img-left" accept="image/*" onchange="handleFile(this, 'img', 'img-left')">
                         </div>
                         <div class="control-row">
-                            <span class="input-label">专属语音 (如: "鱼!")</span>
-                            <label class="file-btn" id="lbl-audio-left" for="file-audio-left">上传语音</label>
-                            <input type="file" id="file-audio-left" accept="audio/*" onchange="loadAudio(event, 'left')">
+                            <span class="input-label">语音 (可选)</span>
+                            <label class="file-btn" id="lbl-audio-left" for="file-audio-left">🎵 上传语音</label>
+                            <input type="file" id="file-audio-left" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-left')">
                         </div>
                     </div>
 
-                    <!-- 2. 右物品设置 -->
                     <div class="group-box">
                         <div class="group-title">右侧物品 (Item 2)</div>
                         <div class="control-row">
                             <span class="input-label">名称</span>
-                            <input type="text" class="text-input" value="老鼠" oninput="updateText('right', this.value)">
+                            <input type="text" id="input-right-name" class="text-input" value="老鼠" oninput="updateText('right', this.value)">
                         </div>
                         <div class="control-row">
                             <span class="input-label">图片</span>
-                            <label class="file-btn" for="file-img-right">上传图片</label>
-                            <input type="file" id="file-img-right" accept="image/*" onchange="loadImg(event, 'img-right')">
+                            <label class="file-btn" for="file-img-right">📷 上传右图</label>
+                            <input type="file" id="file-img-right" accept="image/*" onchange="handleFile(this, 'img', 'img-right')">
                         </div>
                         <div class="control-row">
-                            <span class="input-label">专属语音 (如: "老鼠!")</span>
-                            <label class="file-btn" id="lbl-audio-right" for="file-audio-right">上传语音</label>
-                            <input type="file" id="file-audio-right" accept="audio/*" onchange="loadAudio(event, 'right')">
+                            <span class="input-label">语音 (可选)</span>
+                            <label class="file-btn" id="lbl-audio-right" for="file-audio-right">🎵 上传语音</label>
+                            <input type="file" id="file-audio-right" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-right')">
                         </div>
                     </div>
 
-                    <!-- 3. 主角设置 -->
                     <div class="group-box">
                         <div class="group-title">主角形象</div>
                         <div class="control-row">
-                            <label class="file-btn" for="file-cat">更换猫咪</label>
-                            <input type="file" id="file-cat" accept="image/*" onchange="loadImg(event, 'img-cat')">
+                            <label class="file-btn" for="file-cat">🐱 更换猫咪</label>
+                            <input type="file" id="file-cat" accept="image/*" onchange="handleFile(this, 'img', 'img-cat')">
                         </div>
                         <div class="control-row">
-                            <label class="file-btn" for="file-paw">更换猫爪</label>
-                            <input type="file" id="file-paw" accept="image/*" onchange="loadImg(event, 'img-paw')">
+                            <label class="file-btn" for="file-paw">🐾 更换猫爪</label>
+                            <input type="file" id="file-paw" accept="image/*" onchange="handleFile(this, 'img', 'img-paw')">
                         </div>
                     </div>
 
-                    <!-- 4. 结果音效 -->
                     <div class="group-box">
                         <div class="group-title">反馈音效</div>
                         <div class="control-row">
-                            <span class="input-label">成功语音 (如: "真棒!")</span>
-                            <label class="file-btn" id="lbl-audio-success" for="file-audio-success">上传成功音</label>
-                            <input type="file" id="file-audio-success" accept="audio/*" onchange="loadAudio(event, 'success')">
+                            <label class="file-btn" id="lbl-audio-success" for="file-audio-success">✅ 成功音效</label>
+                            <input type="file" id="file-audio-success" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-success')">
                         </div>
                         <div class="control-row">
-                            <span class="input-label">错误音效 (如: "嗡~")</span>
-                            <label class="file-btn" id="lbl-audio-fail" for="file-audio-fail">上传错误音</label>
-                            <input type="file" id="file-audio-fail" accept="audio/*" onchange="loadAudio(event, 'fail')">
+                            <label class="file-btn" id="lbl-audio-fail" for="file-audio-fail">❌ 失败音效</label>
+                            <input type="file" id="file-audio-fail" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-fail')">
                         </div>
                     </div>
 
+                    <hr class="border-t border-gray-300 my-2">
+                    <button class="save-btn" onclick="exportGame()">💾 保存为独立游戏文件</button>
+                    <p class="text-[10px] text-gray-500 mt-1 text-center">下载后可直接发给朋友玩</p>
+
                 </div>
             </div>
+            
+            <div class="open-panel-btn" onclick="togglePanel()">⚙️ 设置</div>
 
             <!-- 游戏区域 -->
             <div class="cat-container">
@@ -323,7 +166,6 @@
             </div>
 
             <div class="items-area">
-                <!-- 左物品 -->
                 <div class="item-card" onclick="trainCat('left')">
                     <div class="status-bubble" id="bubble-left">选这里!</div>
                     <div class="item-circle">
@@ -332,7 +174,6 @@
                     <div id="txt-left" class="item-name-tag">小鱼干</div>
                 </div>
 
-                <!-- 右物品 -->
                 <div class="item-card" onclick="trainCat('right')">
                     <div class="status-bubble" id="bubble-right">选这里!</div>
                     <div class="item-circle">
@@ -341,66 +182,96 @@
                     <div id="txt-right" class="item-name-tag">老鼠</div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- 1. 资源管理器 ---
-        const assets = {
-            audio: {
-                left: null,
-                right: null,
-                success: null,
-                fail: null
-            }
-        };
+        // --- 1. 文件处理核心 (Base64) ---
+        function handleFile(input, type, targetId) {
+            const file = input.files[0];
+            if (!file) return;
 
-        // 处理图片上传
-        function loadImg(event, imgId) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById(imgId).src = URL.createObjectURL(file);
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                
+                if (type === 'img') {
+                    // 直接更新图片显示的src，并写入到DOM属性中以便导出
+                    const img = document.getElementById(targetId);
+                    img.src = base64;
+                    // 重要：标记该元素被修改过，虽然src已经变了，但为了导出逻辑更清晰
+                } else if (type === 'audio') {
+                    // 更新隐藏的audio标签的src
+                    const audio = document.getElementById(targetId);
+                    audio.src = base64;
+                    // 更新按钮UI
+                    const btnLabel = document.querySelector(`label[for="${input.id}"]`);
+                    btnLabel.classList.add('has-file');
+                    btnLabel.innerText = "已加载 (点击可替换)";
+                }
+            };
+            reader.readAsDataURL(file);
         }
 
-        // 处理音频上传
-        function loadAudio(event, key) {
-            const file = event.target.files[0];
-            if (file) {
-                assets.audio[key] = new Audio(URL.createObjectURL(file));
-                // 更新按钮样式表示已上传
-                document.getElementById('lbl-audio-' + key).classList.add('has-file');
-                document.getElementById('lbl-audio-' + key).innerText = "已加载";
-            }
+        function updateText(side, val) {
+            document.getElementById('txt-' + side).innerText = val || (side==='left'?'物品1':'物品2');
+            // 更新input的value属性，确保导出时保留文字
+            document.getElementById(`input-${side}-name`).setAttribute('value', val);
         }
 
-        // 更新文字
-        function updateText(side, text) {
-            document.getElementById('txt-' + side).innerText = text || (side==='left'?'物品1':'物品2');
+        // --- 2. 导出功能 (魔法所在) ---
+        function exportGame() {
+            // 1. 确保当前的面板状态是收起的（为了截图好看，或者展开也没关系，这里我们默认让导出的文件面板是收起的）
+            const panel = document.getElementById('settingsPanel');
+            const wasCollapsed = panel.classList.contains('collapsed');
+            
+            // 2. 深度克隆整个文档
+            const docClone = document.documentElement.cloneNode(true);
+            
+            // 3. 清理不需要的脚本或临时状态 (可选)
+            // 在这里我们不需要做太多清理，因为所有的状态(src, value)都已经实时写在DOM里了
+            
+            // 4. 生成文件
+            const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
+            const blob = new Blob([htmlContent], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "猫咪训练游戏_自定义版.html";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        // --- 2. 核心播放功能 (带默认值) ---
-        function playSound(key, fallbackText) {
-            if (assets.audio[key]) {
-                assets.audio[key].currentTime = 0;
-                assets.audio[key].play();
+        // --- 3. 游戏逻辑 ---
+        function playSound(id, fallbackText) {
+            const audioEl = document.getElementById('audio-' + id);
+            // 检查是否有src且不为空
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 10) {
+                audioEl.currentTime = 0;
+                audioEl.play().catch(e => console.log("Audio play error:", e));
             } else {
-                // 如果没有上传文件，使用浏览器自带的语音合成 (TTS) 作为默认
-                const u = new SpeechSynthesisUtterance(fallbackText);
-                u.lang = 'zh-CN';
-                u.rate = 1.2;
-                speechSynthesis.speak(u);
+                // TTS 回退
+                if (window.speechSynthesis) {
+                    const u = new SpeechSynthesisUtterance(fallbackText);
+                    u.lang = 'zh-CN';
+                    u.rate = 1.2;
+                    speechSynthesis.speak(u);
+                }
             }
         }
 
-        // 简单的 beep 音生成器 (如果没上传错误音效时用)
         function playBeep() {
-            if(assets.audio.fail) {
-                playSound('fail');
+            // 优先检查是否有上传的fail音效
+            const audioEl = document.getElementById('audio-fail');
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 10) {
+                audioEl.currentTime = 0;
+                audioEl.play();
                 return;
             }
-            // 简单的 Web Audio API 蜂鸣声
+            // 电子蜂鸣声兜底
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             osc.type = 'sawtooth';
@@ -410,98 +281,80 @@
             osc.stop(ctx.currentTime + 0.3);
         }
 
-        // --- 3. 游戏逻辑 ---
-        let isBusy = false; // 防止重复点击
-
+        let isBusy = false;
         async function trainCat(targetSide) {
             if (isBusy) return;
             isBusy = true;
 
             const paw = document.getElementById('paw');
             const oppositeSide = targetSide === 'left' ? 'right' : 'left';
-            
-            // 1. 播放物品名称语音 (例如："鱼！")
             const itemName = document.getElementById('txt-' + targetSide).innerText;
+
+            // 播放物品音
             playSound(targetSide, itemName);
-
-            // 2. 显示气泡提示用户点击了哪里
             showBubble(targetSide);
-
-            // 3. 模拟猫咪思考时间 (0.3秒)
             await wait(300);
 
-            // 4. 猫咪随机选择 (50% 对，50% 错)
-            // 这里的 Math.random() < 0.5 决定猫咪第一次是否听话
+            // 50%概率瞎蒙
             const catChoice = Math.random() < 0.5 ? targetSide : oppositeSide;
 
             if (catChoice === targetSide) {
-                // Situation A: 猫咪选对了
                 await movePawTo(targetSide);
                 playSound('success', '真棒！');
                 await wait(1000);
                 resetPaw();
             } else {
-                // Situation B: 猫咪选错了 (瞎蒙模式)
-                await movePawTo(oppositeSide); // 移到错误那边
-                
-                // 播放错误音效
-                playBeep(); 
-
-                // 停顿 1 秒 (展示"愣住"的效果)
+                await movePawTo(oppositeSide);
+                playBeep(); // 错误音
                 await wait(1000);
-
-                // 自动修正：移到正确的物品
-                resetPaw(); // 先收一下手
-                await wait(200); 
-                await movePawTo(targetSide); // 再去正确的
-                
-                // 播放成功音效
+                resetPaw();
+                await wait(200);
+                await movePawTo(targetSide); // 纠正
                 playSound('success', '真棒！');
                 await wait(1000);
                 resetPaw();
             }
-
             isBusy = false;
         }
 
-        // 动画辅助函数
+        // 动画与UI辅助
         function movePawTo(side) {
             return new Promise(resolve => {
                 const paw = document.getElementById('paw');
                 paw.className = `cat-paw paw-${side}`;
-                setTimeout(resolve, 600); // 等待CSS过渡完成
+                setTimeout(resolve, 600);
             });
         }
-
-        function resetPaw() {
-            const paw = document.getElementById('paw');
-            paw.className = `cat-paw paw-rest`;
-        }
-
-        function wait(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
+        function resetPaw() { document.getElementById('paw').className = `cat-paw paw-rest`; }
+        function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
         function showBubble(side) {
             const b = document.getElementById('bubble-' + side);
             b.classList.add('show-bubble');
             setTimeout(() => b.classList.remove('show-bubble'), 1000);
         }
 
-        // --- 4. 屏幕适配 ---
+        // 面板切换逻辑
+        function togglePanel() {
+            const panel = document.getElementById('settingsPanel');
+            const body = document.body;
+            panel.classList.toggle('collapsed');
+            
+            if (panel.classList.contains('collapsed')) {
+                body.classList.add('panel-closed');
+            } else {
+                body.classList.remove('panel-closed');
+            }
+        }
+
+        // 屏幕适配
         function resizeGame() {
             const gameWidth = 900;
             const gameHeight = 600;
-            const scale = Math.min(
-                (window.innerWidth - 20) / gameWidth,
-                (window.innerHeight - 20) / gameHeight,
-                1
-            );
+            const scale = Math.min((window.innerWidth - 20) / gameWidth, (window.innerHeight - 20) / gameHeight, 1);
             document.getElementById('scale-wrapper').style.transform = `scale(${scale})`;
         }
         window.addEventListener('resize', resizeGame);
         resizeGame();
-
     </script>
 </body>
 </html>
