@@ -2,505 +2,506 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>猫咪训练游戏（2物品版）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI猫咪特训（完全自定义版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 核心动画：爪子摸物动作 */
-        @keyframes popup {
-            0% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .popup { animation: popup 0.5s ease-in-out; }
-        
-        /* 爪子状态：固定位置+摸2个物品的动作 */
-        .cat-paw {
-            position: absolute;
-            top: 220px;
-            left: 50%;
-            transform: translate(-50%, 0);
-            width: 60px !important;
-            height: 60px !important;
-            transition: all 0.6s ease;
-            z-index: 20;
-        }
-        /* 初始状态：爪子在猫咪身前 */
-        .paw-rest { transform: translate(-50%, 0) !important; }
-        /* 摸2个物品的爪子位置 */
-        .paw-item1 { transform: translate(calc(-50% - 180px), 80px) rotate(15deg) !important; width: 65px !important; height: 65px !important; }
-        .paw-item2 { transform: translate(calc(-50% + 180px), 80px) rotate(-15deg) !important; width: 65px !important; height: 65px !important; }
-        
-        /* 物品被摸时的按压效果 */
-        .item-touched { transform: scale(0.95); transition: all 0.3s ease; }
-        
-        /* 上传区域样式 - 优化版：缩小字号、行距，调整尺寸 */
-        .upload-area {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 30;
-            background: white/90;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 220px; /* 缩小宽度 */
-            font-size: 11px; /* 基础字号缩小 */
-            line-height: 1.2; /* 缩小行距 */
-        }
-        .upload-section {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px; /* 缩小内边距 */
-            margin-bottom: 8px; /* 缩小外边距 */
-        }
-        .upload-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-        .upload-btn {
-            background: #10b981;
-            color: white;
-            padding: 6px 10px; /* 缩小按钮内边距 */
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 3px 0; /* 缩小按钮间距 */
-            transition: all 0.2s;
-            display: block;
-            text-align: center;
-            font-size: 10px; /* 按钮文字缩小 */
-        }
-        .upload-btn:hover {
-            background: #059669;
-        }
-        .file-input {
-            display: none;
-        }
-        .item-name-input {
-            margin: 3px 0; /* 缩小输入框间距 */
-            padding: 4px; /* 缩小输入框内边距 */
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            width: 100px; /* 缩小输入框宽度 */
-            font-size: 10px; /* 输入框文字缩小 */
-        }
-        .upload-label {
-            font-size: 10px; /* 标签文字缩小 */
-            font-weight: 500;
-            margin-bottom: 2px; /* 缩小标签下边距 */
-            color: #666;
-            display: block;
-        }
-        .upload-title {
-            font-weight: bold;
-            font-size: 12px; /* 标题文字缩小 */
-            margin-bottom: 6px; /* 缩小标题下边距 */
-            display: block;
+        /* --- 基础布局 --- */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Microsoft YaHei", sans-serif;
         }
 
-        /* 强制锁定所有核心元素尺寸，防止GitHub Pages缩放 */
+        #scale-wrapper {
+            transform-origin: center center;
+            transition: transform 0.2s ease;
+        }
+
         .game-container {
             width: 900px !important;
             height: 600px !important;
-            min-width: 900px !important;
-            min-height: 600px !important;
-            max-width: 900px !important;
-            max-height: 600px !important;
+            position: relative;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex-shrink: 0;
         }
+
+        .game-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, #fff7ed, #fed7aa);
+            z-index: 0;
+        }
+
+        /* --- 设置面板 (升级版：滚动+折叠) --- */
+        .settings-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            bottom: 10px;
+            width: 240px;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 12px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+        }
+
+        .panel-header {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: bold;
+            text-align: center;
+            background: #f9fafb;
+            border-radius: 12px 12px 0 0;
+            color: #374151;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto; /* 允许内部滚动 */
+            padding: 10px;
+        }
+        
+        /* 隐藏滚动条美化 */
+        .panel-content::-webkit-scrollbar { width: 4px; }
+        .panel-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .group-box {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .group-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+            margin-bottom: 6px;
+            border-left: 3px solid #f59e0b;
+            padding-left: 6px;
+        }
+
+        .control-row {
+            margin-bottom: 6px;
+        }
+        
+        .input-label {
+            font-size: 10px;
+            color: #64748b;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .text-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 11px;
+        }
+
+        .file-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 4px 0;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px dashed #94a3b8;
+        }
+        .file-btn:hover { background: #cbd5e1; }
+        .file-btn.has-file { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+
+        input[type="file"] { display: none; }
+
+        /* --- 游戏核心元素 --- */
         .cat-container {
-            width: 200px !important;
-            height: 200px !important;
+            position: absolute;
+            top: 40px;
+            left: 50%; /* 修正为50% */
+            transform: translateX(-50%); /* 修正居中 */
+            width: 240px;
+            height: 240px;
+            z-index: 10;
+            margin-left: 80px; /* 让猫稍微偏右一点，因为左侧有设置面板 */
         }
-        .item-container {
-            width: 150px !important;
-            height: 150px !important;
+
+        .cat-paw {
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            z-index: 20;
+            transform: translate(-50%, 0);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动画 */
+            margin-left: 80px; /* 跟随猫的偏移 */
+            pointer-events: none;
         }
-        .cat-img, .paw-img, .item-img {
-            width: 100% !important;
-            height: 100% !important;
-            max-width: none !important;
-            max-height: none !important;
-            object-fit: cover !important;
+
+        /* 爪子位置定义 */
+        .paw-rest { transform: translate(-50%, 0) rotate(0deg); }
+        .paw-left { transform: translate(calc(-50% - 160px), 140px) rotate(-25deg); }
+        .paw-right { transform: translate(calc(-50% + 160px), 140px) rotate(25deg); }
+
+        .items-area {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 150px;
+            z-index: 15;
+            padding-left: 160px; /* 抵消面板宽度，保持视觉居中 */
         }
+
+        .item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+            position: relative;
+        }
+        .item-card:active { transform: scale(0.95); }
+
+        .item-circle {
+            width: 130px;
+            height: 130px;
+            background: rgba(255,255,255,0.6);
+            border: 4px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .item-img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+        }
+
+        .item-name-tag {
+            margin-top: 10px;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        /* 状态提示泡 */
+        .status-bubble {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        .show-bubble { opacity: 1; top: -50px; }
+
     </style>
-<base target="_blank">
 </head>
-<body class="bg-gray-100 flex flex-col items-center py-10">
-    <!-- 游戏容器：固定尺寸，所有元素位置永久不变 -->
-    <div class="game-container bg-white rounded-2xl shadow-lg relative overflow-hidden">
-        <!-- 背景：模拟地板 -->
-        <div class="absolute inset-0 bg-gradient-to-b from-yellow-50 to-yellow-100"></div>
-        
-        <!-- 自定义上传入口（左上角） - 优化布局 -->
-        <div class="upload-area">
-            <span class="upload-title">自定义图案和音效</span>
-            
-            <!-- 猫咪上传 -->
-            <div class="upload-section">
-                <div class="upload-label">猫咪形象</div>
-                <label for="upload-cat" class="upload-btn">选择图片</label>
-                <input type="file" id="upload-cat" class="file-input" accept="image/*">
-            </div>
-            
-            <!-- 猫爪上传 -->
-            <div class="upload-section">
-                <div class="upload-label">猫爪图案</div>
-                <label for="upload-paw" class="upload-btn">选择图片</label>
-                <input type="file" id="upload-paw" class="file-input" accept="image/*">
-            </div>
-            
-            <!-- 物品1上传 -->
-            <div class="upload-section">
-                <div class="upload-label">物品1</div>
-                <input type="text" id="item1-name" class="item-name-input" placeholder="纸巾" value="纸巾">
-                <label for="upload-item1" class="upload-btn">选择图片</label>
-                <input type="file" id="upload-item1" class="file-input" accept="image/*">
-            </div>
-            
-            <!-- 物品2上传 -->
-            <div class="upload-section">
-                <div class="upload-label">物品2</div>
-                <input type="text" id="item2-name" class="item-name-input" placeholder="红萝卜" value="红萝卜">
-                <label for="upload-item2" class="upload-btn">选择图片</label>
-                <input type="file" id="upload-item2" class="file-input" accept="image/*">
-            </div>
-            
-            <!-- 音效上传部分 -->
-            <div class="upload-section">
-                <div class="upload-label">真棒音效</div>
-                <label for="upload-success-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-success-sound" class="file-input" accept=".mp3,audio/mpeg">
-            </div>
-            
-            <div class="upload-section">
-                <div class="upload-label">错误音效</div>
-                <label for="upload-error-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-error-sound" class="file-input" accept=".mp3,audio/mpeg">
+<body>
+
+    <div id="scale-wrapper">
+        <div class="game-container">
+            <div class="game-bg"></div>
+
+            <!-- 左侧超大设置面板 -->
+            <div class="settings-panel">
+                <div class="panel-header">🎮 训练师控制台</div>
+                <div class="panel-content">
+                    
+                    <!-- 1. 左物品设置 -->
+                    <div class="group-box">
+                        <div class="group-title">左侧物品 (Item 1)</div>
+                        <div class="control-row">
+                            <span class="input-label">名称</span>
+                            <input type="text" class="text-input" value="小鱼干" oninput="updateText('left', this.value)">
+                        </div>
+                        <div class="control-row">
+                            <span class="input-label">图片</span>
+                            <label class="file-btn" for="file-img-left">上传图片</label>
+                            <input type="file" id="file-img-left" accept="image/*" onchange="loadImg(event, 'img-left')">
+                        </div>
+                        <div class="control-row">
+                            <span class="input-label">专属语音 (如: "鱼!")</span>
+                            <label class="file-btn" id="lbl-audio-left" for="file-audio-left">上传语音</label>
+                            <input type="file" id="file-audio-left" accept="audio/*" onchange="loadAudio(event, 'left')">
+                        </div>
+                    </div>
+
+                    <!-- 2. 右物品设置 -->
+                    <div class="group-box">
+                        <div class="group-title">右侧物品 (Item 2)</div>
+                        <div class="control-row">
+                            <span class="input-label">名称</span>
+                            <input type="text" class="text-input" value="老鼠" oninput="updateText('right', this.value)">
+                        </div>
+                        <div class="control-row">
+                            <span class="input-label">图片</span>
+                            <label class="file-btn" for="file-img-right">上传图片</label>
+                            <input type="file" id="file-img-right" accept="image/*" onchange="loadImg(event, 'img-right')">
+                        </div>
+                        <div class="control-row">
+                            <span class="input-label">专属语音 (如: "老鼠!")</span>
+                            <label class="file-btn" id="lbl-audio-right" for="file-audio-right">上传语音</label>
+                            <input type="file" id="file-audio-right" accept="audio/*" onchange="loadAudio(event, 'right')">
+                        </div>
+                    </div>
+
+                    <!-- 3. 主角设置 -->
+                    <div class="group-box">
+                        <div class="group-title">主角形象</div>
+                        <div class="control-row">
+                            <label class="file-btn" for="file-cat">更换猫咪</label>
+                            <input type="file" id="file-cat" accept="image/*" onchange="loadImg(event, 'img-cat')">
+                        </div>
+                        <div class="control-row">
+                            <label class="file-btn" for="file-paw">更换猫爪</label>
+                            <input type="file" id="file-paw" accept="image/*" onchange="loadImg(event, 'img-paw')">
+                        </div>
+                    </div>
+
+                    <!-- 4. 结果音效 -->
+                    <div class="group-box">
+                        <div class="group-title">反馈音效</div>
+                        <div class="control-row">
+                            <span class="input-label">成功语音 (如: "真棒!")</span>
+                            <label class="file-btn" id="lbl-audio-success" for="file-audio-success">上传成功音</label>
+                            <input type="file" id="file-audio-success" accept="audio/*" onchange="loadAudio(event, 'success')">
+                        </div>
+                        <div class="control-row">
+                            <span class="input-label">错误音效 (如: "嗡~")</span>
+                            <label class="file-btn" id="lbl-audio-fail" for="file-audio-fail">上传错误音</label>
+                            <input type="file" id="file-audio-fail" accept="audio/*" onchange="loadAudio(event, 'fail')">
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
-            <!-- 新增：纸巾音效上传 -->
-            <div class="upload-section">
-                <div class="upload-label">纸巾音效</div>
-                <label for="upload-tissue-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-tissue-sound" class="file-input" accept=".mp3,audio/mpeg">
+            <!-- 游戏区域 -->
+            <div class="cat-container">
+                <img id="img-cat" src="https://api.iconify.design/noto:cat-face.svg" style="width:100%; height:100%; object-fit: contain;">
             </div>
 
-            <!-- 新增：萝卜音效上传 -->
-            <div class="upload-section">
-                <div class="upload-label">萝卜音效</div>
-                <label for="upload-radish-sound" class="upload-btn">选择MP3</label>
-                <input type="file" id="upload-radish-sound" class="file-input" accept=".mp3,audio/mpeg">
+            <div id="paw" class="cat-paw">
+                <img id="img-paw" src="https://api.iconify.design/emojione:paw-prints.svg" style="width:100%; height:100%; object-fit: contain; filter: drop-shadow(0 4px 2px rgba(0,0,0,0.2));">
             </div>
-        </div>
-        
-        <!-- 固定位置：猫咪（正中间上方） -->
-        <div class="absolute top-[80px] left-1/2 transform -translate-x-1/2 cat-container z-10">
-            <img id="cat-img" src="./tupian/cat.png" alt="猫咪" class="cat-img rounded-full border-4 border-white shadow-md">
-            <!-- 猫咪爪子（核心动效元素：摸物动作） -->
-            <div id="cat-paw" class="cat-paw paw-rest">
-                <img id="paw-img" src="./tupian/zhua.png" alt="猫爪" class="paw-img object-contain">
+
+            <div class="items-area">
+                <!-- 左物品 -->
+                <div class="item-card" onclick="trainCat('left')">
+                    <div class="status-bubble" id="bubble-left">选这里!</div>
+                    <div class="item-circle">
+                        <img id="img-left" src="https://api.iconify.design/noto:fish.svg" class="item-img">
+                    </div>
+                    <div id="txt-left" class="item-name-tag">小鱼干</div>
+                </div>
+
+                <!-- 右物品 -->
+                <div class="item-card" onclick="trainCat('right')">
+                    <div class="status-bubble" id="bubble-right">选这里!</div>
+                    <div class="item-circle">
+                        <img id="img-right" src="https://api.iconify.design/noto:mouse-face.svg" class="item-img">
+                    </div>
+                    <div id="txt-right" class="item-name-tag">老鼠</div>
+                </div>
             </div>
-        </div>
 
-        <!-- 固定位置：2个物品（底部左右对称排列） -->
-        <!-- 物品1 -->
-        <div class="absolute bottom-[80px] left-[150px] item-container z-5 text-center" id="item1">
-            <img id="item1-img" src="./tupian/zhi.png" alt="物品1" class="item-img rounded-lg border-3 border-white shadow-md">
-            <div id="item1-text" class="mt-3 font-bold text-xl text-gray-800">纸巾</div>
         </div>
-        <!-- 物品2 -->
-        <div class="absolute bottom-[80px] right-[150px] item-container z-5 text-center" id="item2">
-            <img id="item2-img" src="./tupian/luobo.png" alt="物品2" class="item-img rounded-lg border-3 border-white shadow-md">
-            <div id="item2-text" class="mt-3 font-bold text-xl text-gray-800">红萝卜</div>
-        </div>
-
-        <!-- 指令按钮（底部中间，2个按钮） -->
-        <div class="absolute bottom-[20px] left-1/2 transform -translate-x-1/2 flex gap-8">
-            <button id="btn-item1" class="px-10 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-xl font-bold shadow-lg">摸纸巾</button>
-            <button id="btn-item2" class="px-10 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-xl font-bold shadow-lg">摸红萝卜</button>
-        </div>
-
-        <!-- 弹出提示层（不遮挡猫咪） -->
-        <div id="popup" class="fixed top-[50px] left-1/2 transform -translate-x-1/2 z-100 hidden bg-white/90 px-8 py-4 rounded-xl shadow-2xl">
-            <div class="text-7xl font-bold popup"></div>
-        </div>
-
-        <!-- 音频资源：替换为精准匹配的音效 -->
-        <!-- 选对：高声调女声“真棒！” -->
-        <audio id="success-audio" preload="auto">
-            <source src="./shengyin/good.MP3" type="audio/mpeg">
-        </audio>
-        <!-- 选错：错误提示音效 -->
-        <audio id="error-audio" preload="auto">
-            <source src="./shengyin/cuo.MP3" type="audio/mpeg">
-        </audio>
-        <!-- 新增：纸巾音效 -->
-        <audio id="tissue-audio" preload="auto">
-            <source src="./shengyin/zhijin.MP3" type="audio/mpeg">
-        </audio>
-        <!-- 新增：萝卜音效 -->
-        <audio id="radish-audio" preload="auto">
-            <source src="./shengyin/luobo.MP3" type="audio/mpeg">
-        </audio>
     </div>
 
     <script>
-        // 核心配置：2个物品的基础信息
-        const ITEM_CONFIG = [
-            { id: 'item1', name: '纸巾', pawClass: 'paw-item1', btnId: 'btn-item1' },
-            { id: 'item2', name: '红萝卜', pawClass: 'paw-item2', btnId: 'btn-item2' }
-        ];
-
-        // 核心状态管理
-        const state = {
-            currentCommand: '',
-            isInteracting: false,
-            paw: document.getElementById('cat-paw'),
-            pawImg: document.getElementById('paw-img'),
-            catImg: document.getElementById('cat-img'),
-            popup: document.getElementById('popup'),
-            successAudio: document.getElementById('success-audio'),
-            errorAudio: document.getElementById('error-audio'),
-            tissueAudio: document.getElementById('tissue-audio'), // 新增纸巾音效
-            radishAudio: document.getElementById('radish-audio'), // 萝卜音效
-            items: ITEM_CONFIG.map(item => ({
-                ...item,
-                element: document.getElementById(item.id),
-                imgElement: document.getElementById(`${item.id}-img`),
-                textElement: document.getElementById(`${item.id}-text`),
-                btnElement: document.getElementById(item.btnId)
-            }))
+        // --- 1. 资源管理器 ---
+        const assets = {
+            audio: {
+                left: null,
+                right: null,
+                success: null,
+                fail: null
+            }
         };
 
-        // ========== 全自定义上传功能 ==========
-        // 1. 猫咪图片上传
-        const catUpload = document.getElementById('upload-cat');
-        catUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        // 处理图片上传
+        function loadImg(event, imgId) {
+            const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    state.catImg.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                document.getElementById(imgId).src = URL.createObjectURL(file);
             }
-        });
+        }
 
-        // 2. 猫爪图片上传
-        const pawUpload = document.getElementById('upload-paw');
-        pawUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        // 处理音频上传
+        function loadAudio(event, key) {
+            const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    state.pawImg.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                assets.audio[key] = new Audio(URL.createObjectURL(file));
+                // 更新按钮样式表示已上传
+                document.getElementById('lbl-audio-' + key).classList.add('has-file');
+                document.getElementById('lbl-audio-' + key).innerText = "已加载";
             }
-        });
+        }
 
-        // 3. 物品上传和名称修改
-        ITEM_CONFIG.forEach((item, index) => {
-            // 图片上传
-            const uploadInput = document.getElementById(`upload-${item.id}`);
-            uploadInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        state.items[index].imgElement.src = event.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+        // 更新文字
+        function updateText(side, text) {
+            document.getElementById('txt-' + side).innerText = text || (side==='left'?'物品1':'物品2');
+        }
 
-            // 名称修改
-            const nameInput = document.getElementById(`${item.id}-name`);
-            nameInput.addEventListener('input', (e) => {
-                const newName = e.target.value.trim() || `物品${index+1}`;
-                state.items[index].textElement.textContent = newName;
-                state.items[index].btnElement.textContent = `摸${newName}`;
-                state.items[index].name = newName;
-            });
-        });
+        // --- 2. 核心播放功能 (带默认值) ---
+        function playSound(key, fallbackText) {
+            if (assets.audio[key]) {
+                assets.audio[key].currentTime = 0;
+                assets.audio[key].play();
+            } else {
+                // 如果没有上传文件，使用浏览器自带的语音合成 (TTS) 作为默认
+                const u = new SpeechSynthesisUtterance(fallbackText);
+                u.lang = 'zh-CN';
+                u.rate = 1.2;
+                speechSynthesis.speak(u);
+            }
+        }
 
-        // 通用音效上传处理函数（修复格式判断问题）
-        function handleSoundUpload(inputId, audioElement) {
-            const soundUpload = document.getElementById(inputId);
-            soundUpload.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+        // 简单的 beep 音生成器 (如果没上传错误音效时用)
+        function playBeep() {
+            if(assets.audio.fail) {
+                playSound('fail');
+                return;
+            }
+            // 简单的 Web Audio API 蜂鸣声
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        }
+
+        // --- 3. 游戏逻辑 ---
+        let isBusy = false; // 防止重复点击
+
+        async function trainCat(targetSide) {
+            if (isBusy) return;
+            isBusy = true;
+
+            const paw = document.getElementById('paw');
+            const oppositeSide = targetSide === 'left' ? 'right' : 'left';
+            
+            // 1. 播放物品名称语音 (例如："鱼！")
+            const itemName = document.getElementById('txt-' + targetSide).innerText;
+            playSound(targetSide, itemName);
+
+            // 2. 显示气泡提示用户点击了哪里
+            showBubble(targetSide);
+
+            // 3. 模拟猫咪思考时间 (0.3秒)
+            await wait(300);
+
+            // 4. 猫咪随机选择 (50% 对，50% 错)
+            // 这里的 Math.random() < 0.5 决定猫咪第一次是否听话
+            const catChoice = Math.random() < 0.5 ? targetSide : oppositeSide;
+
+            if (catChoice === targetSide) {
+                // Situation A: 猫咪选对了
+                await movePawTo(targetSide);
+                playSound('success', '真棒！');
+                await wait(1000);
+                resetPaw();
+            } else {
+                // Situation B: 猫咪选错了 (瞎蒙模式)
+                await movePawTo(oppositeSide); // 移到错误那边
                 
-                // 修复：兼容不同浏览器的MIME类型和后缀判断
-                const isMp3 = file.type === 'audio/mpeg' || file.type === 'audio/mp3' || file.name.endsWith('.mp3');
-                if (isMp3) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        audioElement.src = event.target.result;
-                        audioElement.preload = 'auto';
-                        audioElement.load();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('请上传MP3格式的音频文件！');
-                    // 清空输入框，避免重复提示
-                    soundUpload.value = '';
-                }
+                // 播放错误音效
+                playBeep(); 
+
+                // 停顿 1 秒 (展示"愣住"的效果)
+                await wait(1000);
+
+                // 自动修正：移到正确的物品
+                resetPaw(); // 先收一下手
+                await wait(200); 
+                await movePawTo(targetSide); // 再去正确的
+                
+                // 播放成功音效
+                playSound('success', '真棒！');
+                await wait(1000);
+                resetPaw();
+            }
+
+            isBusy = false;
+        }
+
+        // 动画辅助函数
+        function movePawTo(side) {
+            return new Promise(resolve => {
+                const paw = document.getElementById('paw');
+                paw.className = `cat-paw paw-${side}`;
+                setTimeout(resolve, 600); // 等待CSS过渡完成
             });
         }
 
-        // 4. 音效上传功能（使用修复后的通用函数）
-        handleSoundUpload('upload-success-sound', state.successAudio);
-        handleSoundUpload('upload-error-sound', state.errorAudio);
-        handleSoundUpload('upload-tissue-sound', state.tissueAudio); // 纸巾音效
-        handleSoundUpload('upload-radish-sound', state.radishAudio); // 萝卜音效
-
-        // ========== 游戏核心逻辑 ==========
-        // 绑定按钮事件
-        state.items.forEach(item => {
-            item.btnElement.addEventListener('click', () => handleCommand(item.name, item));
-        });
-
-        /**
-         * 处理指令：核心摸物逻辑
-         * @param {string} targetName - 目标物品名称
-         * @param {object} targetItem - 目标物品配置
-         */
-        function handleCommand(targetName, targetItem) {
-            if (state.isInteracting) return;
-            state.isInteracting = true;
-            state.currentCommand = targetName;
-
-            // 精准播放对应物品的女声
-            if (targetName === '纸巾') {
-                // 播放纸巾女声
-                state.tissueAudio.currentTime = 0;
-                state.tissueAudio.play().catch(err => {
-                    console.log('纸巾音效播放失败:', err);
-                    alert('请先点击页面任意位置激活音频播放');
-                });
-            } else if (targetName === '红萝卜') {
-                // 播放萝卜女声
-                state.radishAudio.currentTime = 0;
-                state.radishAudio.play().catch(err => {
-                    console.log('萝卜音效播放失败:', err);
-                    alert('请先点击页面任意位置激活音频播放');
-                });
-            }
-
-            // 步骤1：重置所有状态（爪子回位，物品取消按压）
-            resetAllStates();
-
-            // 步骤2：随机选一个物品（排除法起始）
-            const randomItems = [...state.items].filter(item => item.name !== targetName);
-            const randomFirst = randomItems.length > 0 
-                ? randomItems[Math.floor(Math.random() * randomItems.length)] 
-                : state.items[Math.floor(Math.random() * state.items.length)];
-            
-            // 步骤3：执行第一个摸物动作
-            setTimeout(() => {
-                doTouchAction(randomFirst);
-
-                // 步骤4：检查是否选对
-                setTimeout(() => {
-                    if (randomFirst.name === targetName) {
-                        // 选对：红色真棒 + 高声调女声“真棒！” + 物品保持按压
-                        showPopup('真棒！', 'text-red-600');
-                        // 确保音效正确播放（重置播放位置）
-                        state.successAudio.currentTime = 0;
-                        state.successAudio.play();
-                        resetAfterInteraction();
-                    } else {
-                        // 选错：绿色错误 + 错误音效
-                        showPopup('错误！', 'text-green-600');
-                        // 确保音效正确播放（重置播放位置）
-                        state.errorAudio.currentTime = 0;
-                        state.errorAudio.play();
-
-                        // 步骤5：排除法 - 摸另一个正确物品
-                        setTimeout(() => {
-                            // 先重置爪子位置
-                            state.paw.classList.remove(...state.items.map(item => item.pawClass));
-                            state.paw.classList.add('paw-rest');
-                            // 取消错误物品的按压
-                            randomFirst.element.classList.remove('item-touched');
-
-                            // 再摸正确物品
-                            setTimeout(() => {
-                                doTouchAction(targetItem);
-                                
-                                // 选对最终结果
-                                setTimeout(() => {
-                                    showPopup('真棒！', 'text-red-600');
-                                    // 确保音效正确播放（重置播放位置）
-                                    state.successAudio.currentTime = 0;
-                                    state.successAudio.play();
-                                    resetAfterInteraction();
-                                }, 800);
-                            }, 500);
-                        }, 1000);
-                    }
-                }, 800);
-            }, 500);
+        function resetPaw() {
+            const paw = document.getElementById('paw');
+            paw.className = `cat-paw paw-rest`;
         }
 
-        /**
-         * 执行摸物动作：爪子搭在物品上 + 物品按压效果
-         * @param {object} item - 要摸的物品配置
-         */
-        function doTouchAction(item) {
-            // 移除其他爪子样式，添加当前物品的爪子样式
-            state.paw.classList.remove(...state.items.map(i => i.pawClass));
-            state.paw.classList.add(item.pawClass);
-            // 物品按压效果
-            item.element.classList.add('item-touched');
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        /**
-         * 显示弹出提示（不遮挡猫咪）
-         * @param {string} text - 提示文字
-         * @param {string} className - 样式类（颜色）
-         */
-        function showPopup(text, className) {
-            state.popup.innerHTML = `<div class="text-7xl font-bold popup ${className}">${text}</div>`;
-            state.popup.classList.remove('hidden');
-            
-            // 1.5秒后隐藏弹窗
-            setTimeout(() => {
-                state.popup.classList.add('hidden');
-            }, 1500);
+        function showBubble(side) {
+            const b = document.getElementById('bubble-' + side);
+            b.classList.add('show-bubble');
+            setTimeout(() => b.classList.remove('show-bubble'), 1000);
         }
 
-        /**
-         * 重置所有状态
-         */
-        function resetAllStates() {
-            // 爪子回初始位置
-            state.paw.className = 'cat-paw paw-rest';
-            // 取消所有物品按压
-            state.items.forEach(item => item.element.classList.remove('item-touched'));
-            // 隐藏弹窗
-            state.popup.classList.add('hidden');
+        // --- 4. 屏幕适配 ---
+        function resizeGame() {
+            const gameWidth = 900;
+            const gameHeight = 600;
+            const scale = Math.min(
+                (window.innerWidth - 20) / gameWidth,
+                (window.innerHeight - 20) / gameHeight,
+                1
+            );
+            document.getElementById('scale-wrapper').style.transform = `scale(${scale})`;
         }
+        window.addEventListener('resize', resizeGame);
+        resizeGame();
 
-        /**
-         * 交互结束后重置
-         */
-        function resetAfterInteraction() {
-            setTimeout(() => {
-                resetAllStates();
-                state.isInteracting = false; // 恢复可点击
-            }, 2000);
-        }
-
-        // 兼容浏览器自动播放策略：点击页面激活音频
-        document.addEventListener('click', () => {
-            // 预加载所有音频
-            state.successAudio.load();
-            state.errorAudio.load();
-            state.tissueAudio.load(); // 预加载纸巾音效
-            state.radishAudio.load(); // 预加载萝卜音效
-        }, { once: true });
     </script>
 </body>
 </html>
