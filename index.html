@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI猫咪特训（可保存版）</title>
+    <title>AI猫咪特训（URL+文件双模版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- 基础布局 --- */
@@ -13,13 +13,11 @@
         .game-bg { position: absolute; inset: 0; background: linear-gradient(to bottom, #fff7ed, #fed7aa); z-index: 0; }
 
         /* --- 设置面板 --- */
-        .settings-panel { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 250px; background: rgba(255, 255, 255, 0.98); border-radius: 12px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); z-index: 100; display: flex; flex-direction: column; border: 1px solid #e5e7eb; transition: transform 0.3s ease; }
-        .settings-panel.collapsed { transform: translateX(-260px); }
+        .settings-panel { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 260px; background: rgba(255, 255, 255, 0.98); border-radius: 12px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); z-index: 100; display: flex; flex-direction: column; border: 1px solid #e5e7eb; transition: transform 0.3s ease; }
+        .settings-panel.collapsed { transform: translateX(-270px); }
         
         .panel-header { padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: bold; display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border-radius: 12px 12px 0 0; color: #374151; }
         .toggle-btn { cursor: pointer; font-size: 18px; padding: 0 5px; }
-        
-        /* 展开按钮（当面板隐藏时显示） */
         .open-panel-btn { position: absolute; top: 10px; left: 10px; z-index: 90; background: white; padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; font-weight: bold; display: none; }
         .settings-panel.collapsed + .open-panel-btn { display: block; }
 
@@ -27,29 +25,44 @@
         .panel-content::-webkit-scrollbar { width: 4px; }
         .panel-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-        .group-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 12px; }
-        .group-title { font-size: 12px; font-weight: bold; color: #4b5563; margin-bottom: 6px; border-left: 3px solid #f59e0b; padding-left: 6px; }
-        .control-row { margin-bottom: 6px; }
-        .input-label { font-size: 10px; color: #64748b; display: block; margin-bottom: 2px; }
-        .text-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px; font-size: 11px; }
+        .group-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px; }
+        .group-title { font-size: 13px; font-weight: bold; color: #1f2937; margin-bottom: 8px; border-left: 3px solid #f59e0b; padding-left: 6px; }
         
-        .file-btn { display: block; width: 100%; text-align: center; background: #e2e8f0; color: #475569; padding: 5px 0; border-radius: 4px; font-size: 10px; cursor: pointer; transition: 0.2s; border: 1px dashed #94a3b8; }
-        .file-btn:hover { background: #cbd5e1; }
-        .file-btn.has-file { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: bold; }
+        /* 控件样式优化 */
+        .control-row { margin-bottom: 8px; }
+        .input-label { font-size: 11px; color: #6b7280; font-weight: 600; display: block; margin-bottom: 3px; }
+        
+        /* 文本输入框 (名称/URL) */
+        .text-input { width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 5px 8px; font-size: 11px; outline: none; transition: border 0.2s; background: #f9fafb; }
+        .text-input:focus { border-color: #3b82f6; background: #fff; }
+        .text-input::placeholder { color: #9ca3af; }
+
+        /* 文件上传按钮 */
+        .file-btn { display: inline-block; width: 100%; text-align: center; background: #e5e7eb; color: #4b5563; padding: 6px 0; border-radius: 4px; font-size: 11px; cursor: pointer; transition: all 0.2s; border: 1px dashed #9ca3af; margin-bottom: 4px; }
+        .file-btn:hover { background: #d1d5db; }
+        /* 文件加载后的状态 */
+        .file-btn.has-file { background: #dcfce7; border-color: #16a34a; color: #15803d; font-weight: bold; border-style: solid; }
+        
         input[type="file"] { display: none; }
 
+        /* 分割线 */
+        .divider-text { text-align: center; font-size: 9px; color: #9ca3af; margin: 4px 0; position: relative; }
+        .divider-text::before, .divider-text::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #e5e7eb; }
+        .divider-text::before { left: 0; }
+        .divider-text::after { right: 0; }
+
         /* 保存按钮 */
-        .save-btn { background: #3b82f6; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; margin-top: 10px; transition: background 0.2s; }
-        .save-btn:hover { background: #2563eb; }
+        .save-btn { background: #2563eb; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 10px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+        .save-btn:hover { background: #1d4ed8; }
 
         /* --- 游戏核心元素 --- */
         .cat-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 240px; height: 240px; z-index: 10; margin-left: 0; transition: margin 0.3s; }
         .cat-paw { position: absolute; top: 200px; left: 50%; width: 70px; height: 70px; z-index: 20; transform: translate(-50%, 0); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; margin-left: 0; }
         
-        /* 偏移修正（当面板打开时，游戏元素右移以免遮挡） */
+        /* 面板打开时的偏移 */
         body:not(.panel-closed) .cat-container, 
         body:not(.panel-closed) .cat-paw, 
-        body:not(.panel-closed) .items-area { margin-left: 100px; }
+        body:not(.panel-closed) .items-area { margin-left: 120px; }
 
         .paw-rest { transform: translate(-50%, 0) rotate(0deg); }
         .paw-left { transform: translate(calc(-50% - 160px), 140px) rotate(-25deg); }
@@ -65,13 +78,13 @@
         .show-bubble { opacity: 1; top: -50px; }
     </style>
 </head>
-<body>
+<body class="panel-closed"> <!-- 默认收起面板，方便直接玩，可点击展开 -->
 
     <div id="scale-wrapper">
         <div class="game-container">
             <div class="game-bg"></div>
 
-            <!-- 隐藏的音频容器 (用于持久化保存) -->
+            <!-- 隐藏的音频容器 -->
             <div id="audio-store" style="display:none;">
                 <audio id="audio-left"></audio>
                 <audio id="audio-right"></audio>
@@ -79,14 +92,15 @@
                 <audio id="audio-fail"></audio>
             </div>
 
-            <!-- 侧边面板 -->
-            <div class="settings-panel" id="settingsPanel">
+            <!-- 设置面板 -->
+            <div class="settings-panel collapsed" id="settingsPanel">
                 <div class="panel-header">
-                    <span>🎮 训练师控制台</span>
+                    <span>⚙️ 游戏设置</span>
                     <span class="toggle-btn" onclick="togglePanel()">×</span>
                 </div>
                 <div class="panel-content">
                     
+                    <!-- 组1: 左物品 -->
                     <div class="group-box">
                         <div class="group-title">左侧物品 (Item 1)</div>
                         <div class="control-row">
@@ -94,17 +108,22 @@
                             <input type="text" id="input-left-name" class="text-input" value="小鱼干" oninput="updateText('left', this.value)">
                         </div>
                         <div class="control-row">
-                            <span class="input-label">图片</span>
-                            <label class="file-btn" for="file-img-left">📷 上传左图</label>
+                            <span class="input-label">图片 (选其一)</span>
+                            <label class="file-btn" for="file-img-left" id="btn-img-left">📂 选择图片文件...</label>
                             <input type="file" id="file-img-left" accept="image/*" onchange="handleFile(this, 'img', 'img-left')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-left')">
                         </div>
                         <div class="control-row">
                             <span class="input-label">语音 (可选)</span>
-                            <label class="file-btn" id="lbl-audio-left" for="file-audio-left">🎵 上传语音</label>
+                            <label class="file-btn" for="file-audio-left" id="btn-audio-left">🎵 选择音频文件...</label>
                             <input type="file" id="file-audio-left" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-left')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-left')">
                         </div>
                     </div>
 
+                    <!-- 组2: 右物品 -->
                     <div class="group-box">
                         <div class="group-title">右侧物品 (Item 2)</div>
                         <div class="control-row">
@@ -112,44 +131,62 @@
                             <input type="text" id="input-right-name" class="text-input" value="老鼠" oninput="updateText('right', this.value)">
                         </div>
                         <div class="control-row">
-                            <span class="input-label">图片</span>
-                            <label class="file-btn" for="file-img-right">📷 上传右图</label>
+                            <span class="input-label">图片 (选其一)</span>
+                            <label class="file-btn" for="file-img-right" id="btn-img-right">📂 选择图片文件...</label>
                             <input type="file" id="file-img-right" accept="image/*" onchange="handleFile(this, 'img', 'img-right')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴图片URL地址..." onchange="handleUrl(this.value, 'img', 'img-right')">
                         </div>
                         <div class="control-row">
                             <span class="input-label">语音 (可选)</span>
-                            <label class="file-btn" id="lbl-audio-right" for="file-audio-right">🎵 上传语音</label>
+                            <label class="file-btn" for="file-audio-right" id="btn-audio-right">🎵 选择音频文件...</label>
                             <input type="file" id="file-audio-right" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-right')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴音频URL地址..." onchange="handleUrl(this.value, 'audio', 'audio-right')">
                         </div>
                     </div>
 
+                    <!-- 组3: 主角 -->
                     <div class="group-box">
                         <div class="group-title">主角形象</div>
                         <div class="control-row">
-                            <label class="file-btn" for="file-cat">🐱 更换猫咪</label>
+                            <span class="input-label">猫咪图片</span>
+                            <label class="file-btn" for="file-cat" id="btn-img-cat">📂 选择文件...</label>
                             <input type="file" id="file-cat" accept="image/*" onchange="handleFile(this, 'img', 'img-cat')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-cat')">
                         </div>
                         <div class="control-row">
-                            <label class="file-btn" for="file-paw">🐾 更换猫爪</label>
+                            <span class="input-label">猫爪图片</span>
+                            <label class="file-btn" for="file-paw" id="btn-img-paw">📂 选择文件...</label>
                             <input type="file" id="file-paw" accept="image/*" onchange="handleFile(this, 'img', 'img-paw')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴图片URL..." onchange="handleUrl(this.value, 'img', 'img-paw')">
                         </div>
                     </div>
 
+                    <!-- 组4: 音效 -->
                     <div class="group-box">
-                        <div class="group-title">反馈音效</div>
+                        <div class="group-title">系统音效</div>
                         <div class="control-row">
-                            <label class="file-btn" id="lbl-audio-success" for="file-audio-success">✅ 成功音效</label>
+                            <span class="input-label">成功音效</span>
+                            <label class="file-btn" for="file-audio-success" id="btn-audio-success">🎵 选择文件...</label>
                             <input type="file" id="file-audio-success" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-success')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-success')">
                         </div>
                         <div class="control-row">
-                            <label class="file-btn" id="lbl-audio-fail" for="file-audio-fail">❌ 失败音效</label>
+                            <span class="input-label">错误音效</span>
+                            <label class="file-btn" for="file-audio-fail" id="btn-audio-fail">🎵 选择文件...</label>
                             <input type="file" id="file-audio-fail" accept="audio/*" onchange="handleFile(this, 'audio', 'audio-fail')">
+                            <div class="divider-text">OR</div>
+                            <input type="text" class="text-input" placeholder="粘贴音频URL..." onchange="handleUrl(this.value, 'audio', 'audio-fail')">
                         </div>
                     </div>
 
                     <hr class="border-t border-gray-300 my-2">
-                    <button class="save-btn" onclick="exportGame()">💾 保存为独立游戏文件</button>
-                    <p class="text-[10px] text-gray-500 mt-1 text-center">下载后可直接发给朋友玩</p>
+                    <button class="save-btn" onclick="exportGame()">💾 保存为新网页</button>
+                    <p class="text-[10px] text-gray-500 mt-1 text-center">所有设置（含URL）将被永久保存</p>
 
                 </div>
             </div>
@@ -186,7 +223,7 @@
     </div>
 
     <script>
-        // --- 1. 文件处理核心 (Base64) ---
+        // --- 1. 处理文件上传 (转Base64) ---
         function handleFile(input, type, targetId) {
             const file = input.files[0];
             if (!file) return;
@@ -194,84 +231,117 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64 = e.target.result;
-                
-                if (type === 'img') {
-                    // 直接更新图片显示的src，并写入到DOM属性中以便导出
-                    const img = document.getElementById(targetId);
-                    img.src = base64;
-                    // 重要：标记该元素被修改过，虽然src已经变了，但为了导出逻辑更清晰
-                } else if (type === 'audio') {
-                    // 更新隐藏的audio标签的src
-                    const audio = document.getElementById(targetId);
-                    audio.src = base64;
-                    // 更新按钮UI
-                    const btnLabel = document.querySelector(`label[for="${input.id}"]`);
-                    btnLabel.classList.add('has-file');
-                    btnLabel.innerText = "已加载 (点击可替换)";
-                }
+                applySource(base64, type, targetId);
+                updateFileBtnStatus(input.id, true); // 按钮变绿
             };
             reader.readAsDataURL(file);
         }
 
-        function updateText(side, val) {
-            document.getElementById('txt-' + side).innerText = val || (side==='left'?'物品1':'物品2');
-            // 更新input的value属性，确保导出时保留文字
-            document.getElementById(`input-${side}-name`).setAttribute('value', val);
+        // --- 2. 处理URL输入 ---
+        function handleUrl(url, type, targetId) {
+            if (!url || url.trim() === "") return;
+            applySource(url, type, targetId);
+            // URL输入后，不需要变绿文件按钮，因为它不是文件上传，
+            // 但可以重置文件按钮状态，表示现在用的是URL
+            // 找到对应的文件input
+            // 这里我们简化处理，只要生效即可
         }
 
-        // --- 2. 导出功能 (魔法所在) ---
+        // 通用：应用资源到DOM
+        function applySource(src, type, targetId) {
+            if (type === 'img') {
+                const img = document.getElementById(targetId);
+                img.src = src;
+            } else if (type === 'audio') {
+                const audio = document.getElementById(targetId);
+                audio.src = src;
+            }
+        }
+
+        // 更新按钮状态（UI修复：不遮挡文字，只是加个✅）
+        function updateFileBtnStatus(inputId, success) {
+            const label = document.querySelector(`label[for="${inputId}"]`);
+            if (success) {
+                label.classList.add('has-file');
+                // 优雅地更改文字，保留原意
+                if (!label.innerText.includes("✅")) {
+                    label.innerText = "✅ 已加载本地文件 (可替换)";
+                }
+            }
+        }
+
+        function updateText(side, val) {
+            document.getElementById('txt-' + side).innerText = val || (side==='left'?'物品1':'物品2');
+        }
+
+        // --- 3. 导出功能 (升级版：保存输入框的值) ---
         function exportGame() {
-            // 1. 确保当前的面板状态是收起的（为了截图好看，或者展开也没关系，这里我们默认让导出的文件面板是收起的）
-            const panel = document.getElementById('settingsPanel');
-            const wasCollapsed = panel.classList.contains('collapsed');
-            
-            // 2. 深度克隆整个文档
+            // 在导出前，必须把所有 input 的当前值写死到 value 属性里
+            // 否则 outerHTML 不会包含用户刚刚在输入框里打的字
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.setAttribute('value', input.value);
+            });
+
+            // 同样的，确保图片的 src 和 audio 的 src 已经是新的了 (DOM已经实时更新了，所以不需要额外操作)
+
             const docClone = document.documentElement.cloneNode(true);
             
-            // 3. 清理不需要的脚本或临时状态 (可选)
-            // 在这里我们不需要做太多清理，因为所有的状态(src, value)都已经实时写在DOM里了
-            
-            // 4. 生成文件
+            // 强制面板收起，这样别人打开时界面整洁
+            const panel = docClone.querySelector('#settingsPanel');
+            panel.classList.add('collapsed');
+            docClone.querySelector('body').classList.add('panel-closed');
+
             const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
             const blob = new Blob([htmlContent], { type: "text/html" });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement("a");
             a.href = url;
-            a.download = "猫咪训练游戏_自定义版.html";
+            a.download = "猫咪游戏_自定义版.html";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // --- 3. 游戏逻辑 ---
+        // --- 4. 游戏逻辑 ---
         function playSound(id, fallbackText) {
             const audioEl = document.getElementById('audio-' + id);
             // 检查是否有src且不为空
-            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 10) {
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 5) {
                 audioEl.currentTime = 0;
-                audioEl.play().catch(e => console.log("Audio play error:", e));
+                // 尝试播放，处理可能的跨域或格式错误
+                audioEl.play().catch(e => {
+                    console.warn("Audio play failed, using TTS:", e);
+                    playTTS(fallbackText);
+                });
             } else {
-                // TTS 回退
-                if (window.speechSynthesis) {
-                    const u = new SpeechSynthesisUtterance(fallbackText);
-                    u.lang = 'zh-CN';
-                    u.rate = 1.2;
-                    speechSynthesis.speak(u);
-                }
+                playTTS(fallbackText);
+            }
+        }
+
+        function playTTS(text) {
+            if (window.speechSynthesis) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'zh-CN';
+                u.rate = 1.2;
+                speechSynthesis.speak(u);
             }
         }
 
         function playBeep() {
             // 优先检查是否有上传的fail音效
             const audioEl = document.getElementById('audio-fail');
-            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 10) {
+            if (audioEl && audioEl.getAttribute('src') && audioEl.getAttribute('src').length > 5) {
                 audioEl.currentTime = 0;
-                audioEl.play();
+                audioEl.play().catch(() => beepFallback());
                 return;
             }
-            // 电子蜂鸣声兜底
+            beepFallback();
+        }
+
+        function beepFallback() {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             osc.type = 'sawtooth';
@@ -286,11 +356,9 @@
             if (isBusy) return;
             isBusy = true;
 
-            const paw = document.getElementById('paw');
             const oppositeSide = targetSide === 'left' ? 'right' : 'left';
             const itemName = document.getElementById('txt-' + targetSide).innerText;
 
-            // 播放物品音
             playSound(targetSide, itemName);
             showBubble(targetSide);
             await wait(300);
@@ -305,7 +373,7 @@
                 resetPaw();
             } else {
                 await movePawTo(oppositeSide);
-                playBeep(); // 错误音
+                playBeep(); 
                 await wait(1000);
                 resetPaw();
                 await wait(200);
@@ -317,7 +385,6 @@
             isBusy = false;
         }
 
-        // 动画与UI辅助
         function movePawTo(side) {
             return new Promise(resolve => {
                 const paw = document.getElementById('paw');
@@ -333,12 +400,10 @@
             setTimeout(() => b.classList.remove('show-bubble'), 1000);
         }
 
-        // 面板切换逻辑
         function togglePanel() {
             const panel = document.getElementById('settingsPanel');
             const body = document.body;
             panel.classList.toggle('collapsed');
-            
             if (panel.classList.contains('collapsed')) {
                 body.classList.add('panel-closed');
             } else {
@@ -346,7 +411,6 @@
             }
         }
 
-        // 屏幕适配
         function resizeGame() {
             const gameWidth = 900;
             const gameHeight = 600;
